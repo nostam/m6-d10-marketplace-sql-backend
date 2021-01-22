@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      rate: { type: DataTypes.INTEGER, allowNull: false },
+      userId: { type: DataTypes.INTEGER },
+      rate: { type: DataTypes.INTEGER, allowNull: false, max: 5, min: 0 },
       productId: { type: DataTypes.INTEGER, allowNull: false },
     },
     { timestamps: true }
