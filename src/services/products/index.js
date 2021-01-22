@@ -104,9 +104,8 @@ ProductRouter.route("/:id/uploadImg").post(
     if (req.file && req.file.path) imageUrl = req.file.path;
     try {
       const product = await Product.findByPk(req.params.id);
-      const p = { ...product, imageUrl: imageUrl };
-      console.log("<<<<<<<<<<", p);
-      const updatedProduct = await Product.update(p, {
+      const payload = { ...product, imageUrl: imageUrl };
+      const updatedProduct = await Product.update(payload, {
         returning: true,
         plain: true,
         where: { _id: req.params.id },
