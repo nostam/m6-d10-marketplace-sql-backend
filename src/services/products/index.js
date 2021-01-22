@@ -120,7 +120,18 @@ ProductRouter.route("/:id/uploadImg").post(
 ProductRouter.route("/:id")
   .get(async (req, res, next) => {
     try {
-      const data = await Product.findByPk(req.params.id);
+      const data = await Product.findByPk(req.params.id, {
+        include: [
+          { model: Review },
+          { model: Category, attributes: ["_id", "name"] },
+        ],
+        where: req.query.category
+          ? {
+              name: { [Op.iLike]: "%" + req.query.category + "%" },
+            }
+          : {},
+        order: ["_id"],
+      });
       res.send(data);
     } catch (e) {
       next(e);
