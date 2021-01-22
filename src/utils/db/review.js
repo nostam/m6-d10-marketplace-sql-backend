@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       userId: { type: DataTypes.INTEGER },
-      rate: { type: DataTypes.INTEGER, allowNull: false, max: 5, min: 0 },
+      rating: { type: DataTypes.INTEGER, allowNull: false, max: 5, min: 0 },
       productId: { type: DataTypes.INTEGER, allowNull: false },
     },
     { timestamps: true }

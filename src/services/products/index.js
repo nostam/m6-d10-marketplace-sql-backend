@@ -89,8 +89,8 @@ ProductRouter.route("/")
       const prev = offset - limit;
       const payload = {
         links: {
-          next: `${process.env.BE_URL}/products?offset=${next}`,
-          prev: `${process.env.BE_URL}/products?offset=${prev}`,
+          next: `/products?offset=${next}`,
+          prev: `/products?offset=${prev < 0 ? 0 : prev}`,
         },
         products: [...data],
       };
@@ -150,20 +150,16 @@ ProductRouter.route("/:id")
       next(e);
     }
   })
-  .post(
-    validateReview,
-    uploadCloudinary.single("image"),
-    async (req, res, next) => {
-      try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) next(err(errors.array(), 404));
-        const newReview = await Review.create(req.body);
-        res.status(201).send();
-      } catch (error) {
-        next(error);
-      }
+  .post(validateReview, async (req, res, next) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) next(err(errors.array(), 404));
+      const newReview = await Review.create(req.body);
+      res.status(201).send();
+    } catch (error) {
+      next(error);
     }
-  )
+  })
   .put(validateProduct, async (req, res, next) => {
     try {
       const errors = validationResult(req);
@@ -180,6 +176,7 @@ ProductRouter.route("/:id")
   })
   .delete(async (req, res, next) => {
     try {
+      console.log(req);
       const request = await Product.destroy({ where: { _id: req.params.id } });
       if (request === 0) next(err("ID not found", 404));
       res.send("Deleted");
@@ -188,18 +185,29 @@ ProductRouter.route("/:id")
     }
   });
 
-ProductRouter.get("/:ProductId/reviews", async (req, res, next) => {
-  try {
-    //TODO pagination
-    const data = await Review.findAll({
-      include: User,
-    });
-
-    res.send(data);
-  } catch (error) {
-    next(error);
-  }
-});
+ProductRouter.route("/:productId/reviews")
+  .get(async (req, res, next) => {
+    try {
+      //TODO pagination
+      const data = await Review.findAll({
+        include: User,
+      });
+      res.send(data);
+    } catch (error) {
+      next(error);
+    }
+  })
+  .post(validateReview, async (req, res, next) => {
+    try {
+      console.log(req.body);
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) next(err(errors.array(), 404));
+      const newReview = await Review.create(req.body);
+      res.status(201).send();
+    } catch (error) {
+      next(error);
+    }
+  });
 
 ProductRouter.route("/:ProductId/reviews/:reviewId")
   .get(async (req, res, next) => {

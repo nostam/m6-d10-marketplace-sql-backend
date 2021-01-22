@@ -10,8 +10,8 @@ const validateProduct = [
 ];
 
 const validateReview = [
-  body("userId", "Invalid ID").isInt(),
-  body("rate", "Rate between 0 to 5").isInt({ min: 0, max: 5 }),
+  body("userId", "Invalid ID").isNumeric(),
+  body("rating", "Rate between 0 to 5").isInt({ min: 0, max: 5 }),
 ];
 
 const validateCategory = [
