@@ -39,6 +39,9 @@ const upload = multer({
 ProductRouter.route("/")
   .get(async (req, res, next) => {
     try {
+      let offset = 0;
+      if (!isNaN(req.query.offset)) offset = parseInt(req.query.offset);
+      const limit = 15;
       const data = await Product.findAll(
         {
           include: [
@@ -52,8 +55,8 @@ ProductRouter.route("/")
             : {},
           order: ["_id"],
 
-          limit: 25,
-          offset: req.query.offset ? req.query.offset : 0,
+          limit: limit,
+          offset: offset ? offset : 0,
         },
         // { //sequelize.query depreciated
         //   attributes: [
@@ -82,8 +85,16 @@ ProductRouter.route("/")
             : {},
         }
       );
-      console.log(req.query);
-      res.send(data);
+      const next = offset + limit;
+      const prev = offset - limit;
+      const payload = {
+        links: {
+          next: `${process.env.BE_URL}/products?offset=${next}`,
+          prev: `${process.env.BE_URL}/products?offset=${prev}`,
+        },
+        products: [...data],
+      };
+      res.send(payload);
     } catch (e) {
       next(e);
     }
