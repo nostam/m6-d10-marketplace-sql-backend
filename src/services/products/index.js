@@ -51,6 +51,9 @@ ProductRouter.route("/")
               }
             : {},
           order: ["_id"],
+
+          limit: 25,
+          offset: req.query.offset ? req.query.offset : 0,
         },
         // { //sequelize.query depreciated
         //   attributes: [
@@ -77,10 +80,9 @@ ProductRouter.route("/")
           where: req.query.name
             ? { name: { [Op.iLike]: "%" + req.query.name + "%" } }
             : {},
-        },
-        { limit: 25 },
-        { offset: req.query.offset ? req.query.offset : 0 }
+        }
       );
+      console.log(req.query);
       res.send(data);
     } catch (e) {
       next(e);
